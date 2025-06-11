@@ -3,36 +3,118 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>URL Shortener</title>
+  <title>URL Short by T2</title>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
   <style>
-    body { font-family: Arial; text-align: center; background: #f0f0f0; padding: 2rem; }
-    input, button { padding: 10px; font-size: 16px; width: 300px; margin: 5px; }
-    .link-box { margin-top: 20px; }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem;
+      min-height: 100vh;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 1.5rem;
+      color: #1e293b;
+    }
+
+    .container {
+      margin-top: 20%;
+      align-items: center;
+      
+      background: white;
+      padding: 2rem;
+      border-radius: 1rem;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      max-width: 500px;
+      width: 100%;
+    }
+
+    input[type="text"] {
+      margin-top: 10%;
+      width: 95%;
+      padding: 12px;
+      margin-bottom: 1rem;
+      border: 1px solid #cbd5e1;
+      border-radius: 0.5rem;
+      font-size: 16px;
+    }
+
+    button {
+      background-color: #3b82f6;
+      color: white;
+      border: none;
+      padding: 12px;
+      font-size: 16px;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      width: 100%;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #2563eb;
+    }
+
+    .link-box {
+      margin-top: 1.5rem;
+      background: #f1f5f9;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      word-break: break-all;
+    }
+
+    .link-box a {
+      color: #16a34a;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    .link-box a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 1rem;
+      }
+      input[type="text"] {
+      width: 90%;
+      }
+
+      h1 {
+        font-size: 1.5rem;
+      }
+    }
   </style>
 </head>
 <body>
-  <h1>🔗 Personal URL Shortener</h1>
 
-  <input type="text" id="originalUrl" placeholder="Enter full URL">
-  <br>
-  <button onclick="shortenUrl()">Shorten URL</button>
+  <h1>🔗 URL Short by T2</h1>
 
-  <div class="link-box" id="result"></div>
+  <div class="container">
+    <input type="text" id="originalUrl" placeholder="Paste your long URL here..." />
+    <button onclick="shortenUrl()">Shorten URL</button>
+    <div class="link-box" id="result"></div>
+  </div>
 
   <script>
-    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyCgswS8AZObwKQjxZooWWJHf4b1m1rvorA",
-  authDomain: "t2upload.firebaseapp.com",
-  databaseURL: "https://t2upload-default-rtdb.firebaseio.com",
-  projectId: "t2upload",
-  storageBucket: "t2upload.appspot.com",
-  messagingSenderId: "1000887477924",
-  appId: "1:1000887477924:web:522232d054b9b7ce2ea831",
-  measurementId: "G-75ZZL6BWVH"
-};
+    const firebaseConfig = {
+      apiKey: "AIzaSyCgswS8AZObwKQjxZooWWJHf4b1m1rvorA",
+      authDomain: "t2upload.firebaseapp.com",
+      databaseURL: "https://t2upload-default-rtdb.firebaseio.com",
+      projectId: "t2upload",
+      storageBucket: "t2upload.appspot.com",
+      messagingSenderId: "1000887477924",
+      appId: "1:1000887477924:web:522232d054b9b7ce2ea831",
+      measurementId: "G-75ZZL6BWVH"
+    };
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
@@ -49,7 +131,7 @@ const firebaseConfig = {
     function shortenUrl() {
       const originalUrl = document.getElementById('originalUrl').value.trim();
       if (!originalUrl) {
-        alert('Please enter a URL');
+        alert('Please enter a valid URL');
         return;
       }
 
@@ -59,12 +141,12 @@ const firebaseConfig = {
       }).then(() => {
         const shortUrl = window.location.origin + '/?r=' + shortId;
         document.getElementById('result').innerHTML = `
-          <p>Short URL: <a href="${shortUrl}" target="_blank">${shortUrl}</a></p>
+          <p>Your short link:</p>
+          <a href="${shortUrl}" target="_blank">${shortUrl}</a>
         `;
       });
     }
 
-    // Redirect if short URL is visited
     window.onload = function () {
       const params = new URLSearchParams(window.location.search);
       const redirectId = params.get('r');
@@ -73,7 +155,7 @@ const firebaseConfig = {
           if (snapshot.exists()) {
             window.location.href = snapshot.val().original;
           } else {
-            document.body.innerHTML = '<h2>Invalid or expired short URL.</h2>';
+            document.body.innerHTML = '<h2 style=\"color:red;\">⚠️ Invalid or expired short URL.</h2>';
           }
         });
       }
